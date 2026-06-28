@@ -1,0 +1,17 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:3000"
+    environment:
+      MONGO_URI: mongodb://localhost:27017/docker-challenge
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+
+  volumes:
+    mongo-data:
