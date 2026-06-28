@@ -1,17 +1,25 @@
+version: "3.8"
+
 services:
   app:
-    build: .
+    image: wubdigitalinfo/workers:1.0
+    container_name: docker-challenge-app
     ports:
-      - "8080:3000"
+      - "3000:3000"
     environment:
-      MONGO_URI: mongodb://localhost:27017/docker-challenge
+      - DB_URI=mongodb://mongo:27017/dockerChallengeDB
     depends_on:
       - mongo
+    restart: always
 
   mongo:
     image: mongo:7
+    container_name: docker-challenge-db
     ports:
       - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    restart: always
 
-  volumes:
-    mongo-data:
+volumes:
+  mongo-data:
