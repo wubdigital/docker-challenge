@@ -5,11 +5,12 @@ require("dotenv").config();
 
 const connectDB = require("./config/db");
 const usersRoutes = require("./routes/users");
-const { default: mongoose } = require("mongoose");
-
+const mongoose = require("mongoose");
 const app = express();
 const PORT = process.env.PORT || 3000;
-const alloweOrigins = [
+
+// 🛠️ תוקן שם המשתנה ל-allowedOrigins (עם d)
+const allowedOrigins = [
   "http://127.0.0.1:5500",
   "http://localhost:3000",
   process.env.RENDER_EXTERNAL_URL,
@@ -20,10 +21,11 @@ app.use(express.json());
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || alloweOrigins.includes(origin)) {
+      // 🛠️ עכשיו המשתנה תואם לחלוטין למערך למעלה
+      if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error("not allowe by CORS policies"));
+        callback(new Error("not allowed by CORS policies"));
       }
     },
   }),
@@ -32,22 +34,19 @@ app.use(
 connectDB();
 
 if (!process.env.JWT_SECRET) {
-  console.error("JWT_SECRET,is not defined in enviroment varaiables");
+  console.error("JWT_SECRET is not defined in environment variables");
   process.exit(1);
 }
 
-app.get("/", (req, res) => {
-  res.send("wellcome to our users management app!!");
-});
-
 app.get("/health", (req, res) => {
-  const dbStates = ["connected", "disconnected", "connecting", "disconnecting"];
+  // 🛠️ סידור המערך לפי האינדקסים הרשמיים של Mongoose (0=disconnected, 1=connected...)
+  const dbStates = ["disconnected", "connected", "connecting", "disconnecting"];
   const dbconnected = mongoose.connection.readyState === 1;
 
   res.status(dbconnected ? 200 : 503).json({
     status: dbconnected ? "ok" : "error",
     db: dbStates[mongoose.connection.readyState],
-    runtime: `${Math.floor(process.uptime)}s`,
+    runtime: `${Math.floor(process.uptime())}s`, // 🛠️ הוספת סוגריים () לקריאה לפונקציה
     environment: process.env.NODE_ENV || "development",
   });
 });
