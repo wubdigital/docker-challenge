@@ -1,13 +1,20 @@
 FROM node:20-alpine
 
+# הגדרת תיקיית העבודה
 WORKDIR /app
 
-COPY package*.json ./
+# 1. מעתיקים את קבצי ה-package.json ומשנים בעלות למשתמש node
+COPY --chown=node:node package*.json ./
 
-RUN npm install
+# 2. התקנת חבילות פרודקשן
+RUN npm install --only=production
 
-COPY . .
+# 3. מעתיקים את שאר קוד המקור ומשנים בעלות למשתמש node
+COPY --chown=node:node . .
 
+# 🔥 מעבר רשמי למשתמש המאובטח והמוגבל
+USER node
+
+ENV NODE_ENV=production
 EXPOSE 3000
-
 CMD ["node", "app.js"]

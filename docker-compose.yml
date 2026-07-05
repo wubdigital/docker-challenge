@@ -1,15 +1,25 @@
 version: "3.8"
 
 services:
+  nginx:
+    image: nginx:alpine
+    container_name: docker-challenge-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+    restart: always
+
   app:
     image: wubdigitalinfo/workers:1.0
     container_name: docker-challenge-app
-    ports:
-      - "3000:3000"
     environment:
       - DB_URI=mongodb://mongo:27017/dockerChallengeDB
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     restart: always
 
   mongo:
@@ -19,6 +29,12 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     restart: always
 
 volumes:

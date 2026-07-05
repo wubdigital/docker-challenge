@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  app:
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - .:/app # Bind mount to map local workspace changes in real-time
+      - /app/node_modules # Anonymous volume to protect container dependencies from host overwrite
+    command: ./node_modules/.bin/nodemon app.js # Starts nodemon to detect changes and live-reload

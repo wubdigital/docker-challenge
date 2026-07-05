@@ -4,16 +4,19 @@
   "description": "Node Server",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "node app.js",
+    "dev": "nodemon app.js",
     "loadusers": "node load-users.js"
   },
-  "author": "Almayo Mekonen",
+  "author": "yehuda wubaye",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "mongoose": "^9.6.3",
+    "mongoose": "^9.6.3"
+  },
+  "devDependencies": {
     "nodemon": "^3.1.14"
   }
 }
