@@ -1,15 +1,15 @@
 # image - multi-stage build
 
-check docker image size: docker image ls
-DISK USAGE = 246mb
+check docker image size: docker image ls  
+DISK USAGE = 246mb  
 CONTENT SIZE = 57mb
 
 ![image size](images/1.png)
-build stage-multi -
-What is a Multi-stage Build?
+build stage-multi -  
+What is a Multi-stage Build?  
 A Multi-stage build is an advanced Docker technique that allows you to use multiple FROM statements in a single Dockerfile. Each FROM instruction begins a new stage of the build using a different base image.
 How it works: You can use a heavy image with all development tools, dependencies, and testing frameworks in the initial stage (e.g., to run tests or compile code). Then, in the final stage, you start with a completely fresh, minimalist image and copy only the final built artifacts or production dependencies from the previous stage.
-The Benefit: It keeps the final runtime image incredibly small and secure, leaving all heavy development utilities behind without requiring separate files for development and production.
+The Benefit: It keeps the final runtime image incredibly small and secure, leaving all heavy development utilities behind without requiring separate files for development and production.  
 source - https://docs.docker.com/get-started/docker-concepts/building-images/multi-stage-builds/
 
 What does a .dockerignore file do?
