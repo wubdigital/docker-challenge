@@ -3,7 +3,7 @@ image - multi-stage build
 check docker image size: docker image ls
 DISK USAGE = 246mb
 CONTENT SIZE = 57mb
-
+![Docker Image Size Verification](1.png)
 build stage-multi -
 What is a Multi-stage Build?
 A Multi-stage build is an advanced Docker technique that allows you to use multiple FROM statements in a single Dockerfile. Each FROM instruction begins a new stage of the build using a different base image.
