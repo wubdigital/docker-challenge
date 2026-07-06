@@ -3,7 +3,8 @@
 check docker image size: docker image ls
 DISK USAGE = 246mb
 CONTENT SIZE = 57mb
-![image size](1.png)
+
+![image size](images/1.png)
 build stage-multi -
 What is a Multi-stage Build?
 A Multi-stage build is an advanced Docker technique that allows you to use multiple FROM statements in a single Dockerfile. Each FROM instruction begins a new stage of the build using a different base image.
@@ -23,7 +24,7 @@ Enhanced Security: Because Alpine contains only the absolute bare minimum requir
 Key Considerations & Compatibility: Alpine uses musl libc instead of the standard glibc found in most Linux distributions, and uses busybox for its core utilities. This means common development tools like bash or git are not installed by default. If your application strictly relies on glibc or standard shell binaries, you may need to manually install them via the Alpine package manager (apk) inside your Dockerfile, or compile your code accordingly to avoid compatibility issues.
 
 By rewriting the Dockerfile, we isolated the installation process using the --only=production flag and optimized our copy layers, successfully preventing development packages (such as nodemon) from entering the final image. As a result, we reduced the code layers size (CONTENT SIZE) by 0.7MB and saved a total of 4MB from the overall disk footprint (DISK USAGE).
-![build stage-multi](2.png)
+![build stage-multi](images/2.png)
 
 Research Question: Why does Docker image size matter?
 Optimizing Docker image size is a fundamental best practice in DevOps engineering. Minimizing image size directly impacts performance, cost, and system security across four key areas:
@@ -49,11 +50,11 @@ While some applications can handle this via automated retry logic, relying solel
 source - https://docs.docker.com/compose/how-tos/startup-order/
 
 Updated docker-compose.yml snippet implemented to fix the bug:
-![Healthcheck](3.png)
+![Healthcheck](images/3.png)
 Verification & Log Proof
 Deterministic Startup Order: By changing depends_on to include condition: service_healthy, we successfully eliminated the race condition bug.
 Healthy Status Verification: Running docker ps confirms that the database container is actively monitored and transitions to a (healthy) state. As shown in the logs (image image_479a3a.png), both services recreate and initialize correctly, allowing the main application (docker-challenge-app) to safely establish a secure, first-time database connection with zero crash loops or initial connection retries.
-![Container Running](4.png)
+![Container Running](images/4.png)
 
 Research Question: "Container Running" vs. "Service Ready"
 A "Running" Container: This simply means the container’s primary isolation process (e.g., the MongoDB daemon) has been successfully initiated by the Docker engine. However, just because the process is running does not mean the database has finished its internal initialization, ran migrations, or opened its network ports to accept traffic.
@@ -88,7 +89,7 @@ Step-by-Step Security Verification
 
 3. After rebuilding the image with docker build --no-cache -t docker-challenge-app:latest ., we re-run the validation command on the newly optimized container:
    docker run --rm docker-challenge-app:latest whoami
-   ![Non-Root User](5.png)
+   ![Non-Root User](images/5.png)
    Output: node
    Conclusion: The application is now successfully and securely running under a restricted, non-root user identity. Furthermore, launching the environment with docker compose up --force-recreate verifies that file permissions are completely intact, and the application functions smoothly without any permission crashes.
    Research Question: The Risk of Privilege Escalation (Root vs. Non-Root)
@@ -116,7 +117,7 @@ Sources & Official Documentation:
    - Goal: Maximize development speed with live updates (Hot Reload) and full development dependency access.
    - Execution Command: docker compose up
    - Configuration Implementation (docker-compose.override.yml):
-     ![Environment Separation](6.png)
+     ![Environment Separation](images/6.png)
 
    B. Production Mode (Prod Environment)
    - Goal: A completely locked down, minimalist runtime environment built exclusively for peak stability, maximum performance, and absolute security.
@@ -160,11 +161,11 @@ Sources & Official Documentation:
    To decouple the application container from direct ingress traffic, the configuration was refactored into two structural components:
    A. Edge Proxy Rules Layout (nginx.conf)
    This newly introduced configuration explicitly maps traffic ingress rules, passing upstream headers directly to the internal container DNS name:
-   ![docker-compose.override.yml](7.png)
+   ![docker-compose.override.yml](images/7.png)
 
 B. Unified Container Orchestration Layer (docker-compose.yml)
 The ports array was completely stripped away from the app configuration block, ensuring it cannot be reached directly via host port 3000. Port exposure is bound exclusively to Nginx:
-![docker-compose.yml](8.png)
+![docker-compose.yml](images/8.png)
 
 Research Question: Architectural Benefits of a Reverse Proxy
 Deploying Nginx ahead of Node.js provides crucial advantages that cannot be achieved by a standalone Node application:
